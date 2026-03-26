@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     width: 260,
     height: 260,
     borderRadius: 130,
-    backgroundColor: '#6366f1',
+    backgroundColor: '#3b82f6',
     opacity: 0.12,
   },
   title: {
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#818cf8',
+    color: '#60a5fa',
     marginBottom: 6,
     marginTop: 12,
     textTransform: 'uppercase',
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     borderColor: '#1e3a5f',
   },
   saveBtn: {
-    backgroundColor: '#6366f1',
+    backgroundColor: '#3b82f6',
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',

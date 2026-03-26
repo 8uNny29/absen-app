@@ -14,7 +14,7 @@ export type RootStackParamList = {
   Home: undefined;
   Setup: { editingProfile?: Profile } | undefined;
   Form: { url: string; profile: Profile };
-  GoogleLogin: undefined;
+  GoogleLogin: { mode?: 'login' | 'logout' };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -31,7 +31,7 @@ export default function App() {
   if (!initialRoute) {
     return (
       <View style={{ flex: 1, backgroundColor: '#0f0f1a', justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator color="#6366f1" size="large" />
+        <ActivityIndicator color="#3b82f6" size="large" />
       </View>
     );
   }

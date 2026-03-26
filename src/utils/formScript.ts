@@ -15,8 +15,20 @@ export function buildFormScript(params: {
     return; // Stop script on Google Login pages (accounts.google.com)
   }
 
-  // Check if it's the success page
   var pageText = document.body ? document.body.textContent.toLowerCase() : '';
+
+  // Check if login is required
+  if (pageText.indexOf('login untuk melanjutkan') !== -1 ||
+      pageText.indexOf('anda harus login') !== -1 ||
+      pageText.indexOf('login to continue') !== -1 ||
+      pageText.indexOf('you must be logged in') !== -1) {
+    if (window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage('NEEDS_LOGIN');
+    }
+    return;
+  }
+
+  // Check if it's the success page
   if (pageText.indexOf('telah direkam') !== -1 || pageText.indexOf('has been recorded') !== -1 || pageText.indexOf('jawaban anda telah') !== -1) {
     if (window.ReactNativeWebView) {
       window.ReactNativeWebView.postMessage('SUCCESS');

@@ -139,15 +139,15 @@ const styles = StyleSheet.create({
     borderColor: '#0f3460',
   },
   profileCardActive: {
-    borderColor: '#6366f1',
-    backgroundColor: '#1e1b4b',
+    borderColor: '#3b82f6',
+    backgroundColor: '#172554',
   },
   profileInfo: {
     flex: 1,
   },
   activeBadge: {
     fontSize: 10,
-    color: '#818cf8',
+    color: '#60a5fa',
     fontWeight: '700',
     marginBottom: 2,
     letterSpacing: 1,
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   addBtn: {
-    backgroundColor: '#6366f1',
+    backgroundColor: '#3b82f6',
     borderRadius: 14,
     paddingVertical: 15,
     alignItems: 'center',

@@ -14,6 +14,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import * as Clipboard from 'expo-clipboard';
 import { RootStackParamList } from '../../App';
 import {
   Profile,
@@ -78,9 +79,32 @@ export default function HomeScreen({ navigation }: Props) {
     }
   }
 
+  async function handleLogout() {
+    Alert.alert(
+      'Keluar Akun Google',
+      'Yakin ingin mengeluarkan akun Google? Kamu perlu login ulang untuk absen berikutnya.',
+      [
+        { text: 'Batal', style: 'cancel' },
+        {
+          text: 'Keluar',
+          style: 'destructive',
+          onPress: async () => {
+            await AsyncStorage.setItem('isGoogleLoggedIn', 'false');
+            setIsGoogleLoggedIn(false);
+            navigation.navigate('GoogleLogin', { mode: 'logout' });
+          },
+        },
+      ]
+    );
+  }
+
   function handleAbsen() {
     if (!activeProfile) {
       Alert.alert('Profil Belum Ada', 'Tambahkan profil terlebih dahulu.');
+      return;
+    }
+    if (!isGoogleLoggedIn) {
+      Alert.alert('Belum Login Google', 'Silakan login akun Google terlebih dahulu sebelum absen.');
       return;
     }
     const url = formUrl.trim();
@@ -98,7 +122,7 @@ export default function HomeScreen({ navigation }: Props) {
   if (loading) {
     return (
       <View style={[styles.container, styles.center]}>
-        <ActivityIndicator color="#6366f1" size="large" />
+        <ActivityIndicator color="#3b82f6" size="large" />
       </View>
     );
   }
@@ -116,7 +140,7 @@ export default function HomeScreen({ navigation }: Props) {
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.appName}>AbsenApp</Text>
+            <Text style={styles.appName}>Absen Kerja</Text>
             <Text style={styles.appTagline}>Absensi Otomatis · Google Form</Text>
           </View>
           <TouchableOpacity
@@ -167,37 +191,60 @@ export default function HomeScreen({ navigation }: Props) {
 
         {/* URL Input */}
         <Text style={styles.sectionLabel}>Link Google Form</Text>
-        <TextInput
-          style={styles.urlInput}
-          placeholder="Paste URL form di sini..."
-          placeholderTextColor="#475569"
-          value={formUrl}
-          onChangeText={setFormUrl}
-          autoCorrect={false}
-          autoCapitalize="none"
-          keyboardType="url"
-          multiline
-        />
+        <View style={styles.urlInputContainer}>
+          <TextInput
+            style={styles.urlInputFlex}
+            placeholder="Paste URL form di sini..."
+            placeholderTextColor="#475569"
+            value={formUrl}
+            onChangeText={setFormUrl}
+            autoCorrect={false}
+            autoCapitalize="none"
+            keyboardType="url"
+            multiline
+          />
+          <TouchableOpacity
+            style={styles.pasteBtn}
+            activeOpacity={0.7}
+            onPress={async () => {
+              const text = await Clipboard.getStringAsync();
+              if (text) setFormUrl(text);
+            }}
+          >
+            <Text style={styles.pasteBtnText}>📋 Paste</Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Absen Button */}
         <TouchableOpacity
-          style={[styles.absenBtn, !activeProfile && styles.absenBtnDisabled]}
+          style={[styles.absenBtn, (!activeProfile || !isGoogleLoggedIn) && styles.absenBtnDisabled]}
           onPress={handleAbsen}
           activeOpacity={0.8}
         >
           <Text style={styles.absenBtnText}>⚡ ABSEN SEKARANG</Text>
         </TouchableOpacity>
 
-        {/* Google Login Pre-flight Button */}
-        <TouchableOpacity
-          style={[styles.googleLoginBtn, isGoogleLoggedIn && styles.googleLoginBtnSuccess]}
-          onPress={() => navigation.navigate('GoogleLogin')}
-          activeOpacity={0.8}
-        >
-          <Text style={[styles.googleLoginBtnText, isGoogleLoggedIn && styles.googleLoginBtnTextSuccess]}>
-            {isGoogleLoggedIn ? '✅ Email Google Tertaut' : '🔑 Login Akun Google Dulu'}
-          </Text>
-        </TouchableOpacity>
+        {/* Google Login / Logout Buttons */}
+        <View style={styles.googleRow}>
+          <TouchableOpacity
+            style={[styles.googleLoginBtn, isGoogleLoggedIn && styles.googleLoginBtnSuccess]}
+            onPress={() => navigation.navigate('GoogleLogin')}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.googleLoginBtnText, isGoogleLoggedIn && styles.googleLoginBtnTextSuccess]}>
+              {isGoogleLoggedIn ? '✅ Email Google Tertaut' : '🔑 Login Akun Google Dulu'}
+            </Text>
+          </TouchableOpacity>
+          {isGoogleLoggedIn && (
+            <TouchableOpacity
+              style={styles.logoutBtn}
+              onPress={handleLogout}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.logoutBtnText}>Logout</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </ScrollView>
 
       <ProfileSwitcher
@@ -261,7 +308,7 @@ const styles = StyleSheet.create({
     padding: 18,
     marginBottom: 24,
     borderWidth: 1.5,
-    borderColor: '#6366f1',
+    borderColor: '#3b82f6',
   },
   profileCardHeader: {
     flexDirection: 'row',
@@ -272,13 +319,13 @@ const styles = StyleSheet.create({
   profileCardLabel: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#818cf8',
+    color: '#60a5fa',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
   switchLink: {
     fontSize: 13,
-    color: '#6366f1',
+    color: '#3b82f6',
     fontWeight: '600',
   },
   profileName: {
@@ -310,7 +357,7 @@ const styles = StyleSheet.create({
   },
   metaChipValue: {
     fontSize: 14,
-    color: '#c7d2fe',
+    color: '#bfdbfe',
     fontWeight: '600',
     marginTop: 1,
   },
@@ -333,18 +380,25 @@ const styles = StyleSheet.create({
   },
   noProfileText: {
     fontSize: 16,
-    color: '#6366f1',
+    color: '#3b82f6',
     fontWeight: '600',
   },
   sectionLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#818cf8',
+    color: '#60a5fa',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     marginBottom: 8,
   },
-  urlInput: {
+  urlInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    marginBottom: 24,
+    gap: 8,
+  },
+  urlInputFlex: {
+    flex: 1,
     backgroundColor: '#16213e',
     borderRadius: 14,
     paddingHorizontal: 16,
@@ -353,16 +407,29 @@ const styles = StyleSheet.create({
     color: '#e2e8f0',
     borderWidth: 1,
     borderColor: '#0f3460',
-    marginBottom: 24,
     minHeight: 56,
     textAlignVertical: 'top',
   },
+  pasteBtn: {
+    backgroundColor: '#1e293b',
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  pasteBtnText: {
+    color: '#94a3b8',
+    fontSize: 13,
+    fontWeight: '700',
+  },
   absenBtn: {
-    backgroundColor: '#6366f1',
+    backgroundColor: '#3b82f6',
     borderRadius: 16,
     paddingVertical: 18,
     alignItems: 'center',
-    shadowColor: '#6366f1',
+    shadowColor: '#3b82f6',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.5,
     shadowRadius: 16,
@@ -378,11 +445,11 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   googleLoginBtn: {
+    flex: 1,
     backgroundColor: '#1e293b',
     borderRadius: 16,
     paddingVertical: 16,
     alignItems: 'center',
-    marginTop: 16,
     borderWidth: 1,
     borderColor: '#334155',
   },
@@ -397,5 +464,25 @@ const styles = StyleSheet.create({
   },
   googleLoginBtnTextSuccess: {
     color: '#34d399',
+  },
+  googleRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 16,
+  },
+  logoutBtn: {
+    backgroundColor: '#7f1d1d',
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#991b1b',
+  },
+  logoutBtnText: {
+    color: '#fca5a5',
+    fontSize: 14,
+    fontWeight: '700',
   },
 });

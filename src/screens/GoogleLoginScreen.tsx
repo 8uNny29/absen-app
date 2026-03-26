@@ -7,13 +7,18 @@ import { RootStackParamList } from '../../App';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'GoogleLogin'>;
 
-export default function GoogleLoginScreen({ navigation }: Props) {
+export default function GoogleLoginScreen({ navigation, route }: Props) {
   const webviewRef = useRef<WebView>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const isLogoutMode = route.params?.mode === 'logout';
 
   const handleNavigationStateChange = async (navState: any) => {
     const url = navState.url;
-    // If Google redirects to account management, login is successful
+
+    // Kalau mode logout, jangan set login flag — biarkan user di halaman login
+    if (isLogoutMode) return;
+
+    // Kalau mode login, deteksi redirect ke account management sebagai tanda berhasil
     if (url.includes('myaccount.google.com') || url.includes('myactivity.google.com') || url.includes('myadcenter.google.com')) {
       await AsyncStorage.setItem('isGoogleLoggedIn', 'true');
       navigation.goBack();
@@ -31,7 +36,7 @@ export default function GoogleLoginScreen({ navigation }: Props) {
           <Text style={styles.topBarSub} numberOfLines={1}>accounts.google.com</Text>
         </View>
         <View style={styles.statusDot}>
-          {loadState === 'loading' && <ActivityIndicator size="small" color="#6366f1" />}
+          {loadState === 'loading' && <ActivityIndicator size="small" color="#3b82f6" />}
         </View>
       </View>
 
@@ -43,7 +48,7 @@ export default function GoogleLoginScreen({ navigation }: Props) {
 
       <WebView
         ref={webviewRef}
-        source={{ uri: 'https://accounts.google.com/ServiceLogin' }}
+        source={{ uri: isLogoutMode ? 'https://accounts.google.com/logout' : 'https://accounts.google.com/ServiceLogin' }}
         style={styles.flex}
         onLoadStart={() => setLoadState('loading')}
         onLoadEnd={() => setLoadState('ready')}
@@ -78,7 +83,7 @@ const styles = StyleSheet.create({
   },
   backIcon: {
     fontSize: 22,
-    color: '#818cf8',
+    color: '#60a5fa',
   },
   topBarCenter: {
     flex: 1,
@@ -98,14 +103,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   banner: {
-    backgroundColor: '#1e1b4b',
+    backgroundColor: '#172554',
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#312e81',
+    borderBottomColor: '#1e3a8a',
   },
   bannerText: {
-    color: '#818cf8',
+    color: '#60a5fa',
     fontSize: 13,
     fontWeight: '500',
     textAlign: 'center',

@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "absen-app",
-    "slug": "absen-app",
-    "version": "1.0.0",
+    "name": "Absen Kerja",
+    "slug": "absen-kerja",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -22,14 +22,16 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.absenkerja.app"
+      "package": "com.bunny.absenkerja",
+      "versionCode": 1,
+      "permissions": []
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "4e236d55-ad3a-498b-b0e8-05618fec08f1"
+        "projectId": "aa3332c3-4f52-409d-970d-b75014fc271b"
       }
     }
   }

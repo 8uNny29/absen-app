@@ -8,6 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { buildFormScript } from '../utils/formScript';
@@ -40,6 +41,12 @@ export default function FormScreen({ navigation, route }: Props) {
         'Formulir kehadiran Anda telah berhasil dikirim!',
         [{ text: 'OK', onPress: () => navigation.goBack() }]
       );
+    } else if (msg === 'NEEDS_LOGIN') {
+      Alert.alert(
+        'Login Diperlukan',
+        'Form ini memerlukan login Google. Silakan login terlebih dahulu melalui tombol di halaman utama.',
+        [{ text: 'OK', onPress: () => navigation.goBack() }]
+      );
     } else if (msg.startsWith('ERROR:')) {
       console.warn('[FormScreen] Injection error:', msg);
     }
@@ -66,7 +73,7 @@ export default function FormScreen({ navigation, route }: Props) {
           <Text style={styles.topBarSub} numberOfLines={1}>{profile.namaLengkap}</Text>
         </View>
         <View style={styles.statusDot}>
-          {loadState === 'loading' && <ActivityIndicator size="small" color="#6366f1" />}
+          {loadState === 'loading' && <ActivityIndicator size="small" color="#3b82f6" />}
           {loadState === 'ready' && <Text style={styles.statusOk}>✓</Text>}
         </View>
       </View>
@@ -96,7 +103,7 @@ export default function FormScreen({ navigation, route }: Props) {
         startInLoadingState
         renderLoading={() => (
           <View style={[styles.flex, styles.center]}>
-            <ActivityIndicator size="large" color="#6366f1" />
+            <ActivityIndicator size="large" color="#3b82f6" />
             <Text style={styles.loadingText}>Membuka form...</Text>
           </View>
         )}
@@ -124,7 +131,7 @@ const styles = StyleSheet.create({
   },
   backIcon: {
     fontSize: 22,
-    color: '#818cf8',
+    color: '#60a5fa',
   },
   topBarCenter: {
     flex: 1,
@@ -149,14 +156,14 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   banner: {
-    backgroundColor: '#1e1b4b',
+    backgroundColor: '#172554',
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#312e81',
+    borderBottomColor: '#1e3a8a',
   },
   bannerText: {
-    color: '#818cf8',
+    color: '#60a5fa',
     fontSize: 13,
     fontWeight: '600',
     textAlign: 'center',
