@@ -54,7 +54,3 @@ AbsenApp uses a WebView-based automation approach:
 ## Use Case
 
 Originally built for a team that needed to submit daily attendance via Google Forms without manual input — reducing the process from ~2 minutes to under 5 seconds per person.
-
-## Author
-
-Muhammad Rafi Rabani — [jasainput.id](https://jasainput.id)
